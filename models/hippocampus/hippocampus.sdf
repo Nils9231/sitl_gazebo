@@ -684,12 +684,12 @@
         Now the plugins which are called by the simulation are defined. Also important parameters such as the transition
         from motor command to real force are defined.
     -->
-    <static>0</static>
+    <!--<static>0</static>
     <allow_auto_disable>1</allow_auto_disable>
     <plugin name="gps_plugin" filename="libgazebo_gps_plugin.so">
         <robotNamespace></robotNamespace>
         <gpsNoise>true</gpsNoise>
-    </plugin>
+    </plugin>-->
 
     <!--
         The gazebo_mavlink_plugin.cpp is called. Parameters are transferred.
@@ -697,7 +697,7 @@
     <plugin name='mavlink_interface' filename='libgazebo_mavlink_interface.so'>
       <robotNamespace>hippocampus</robotNamespace>
       <imuSubTopic>/imu</imuSubTopic>
-      <gpsSubTopic>/gps</gpsSubTopic>
+      <!--<gpsSubTopic>/gps</gpsSubTopic>
       <mavlink_addr>INADDR_ANY</mavlink_addr>
       <mavlink_udp_port>14560</mavlink_udp_port>
       <serialEnabled>false</serialEnabled>
@@ -706,7 +706,7 @@
       <qgc_addr>INADDR_ANY</qgc_addr>
       <qgc_udp_port>14550</qgc_udp_port>
       <hil_mode>false</hil_mode>
-      <hil_state_level>false</hil_state_level>
+      <hil_state_level>false</hil_state_level>-->
       <motorSpeedCommandPubTopic>/gazebo/command/motor_speed</motorSpeedCommandPubTopic>
 
       <!-- control channels, this way for every channel different settings can be realized -->
@@ -771,7 +771,7 @@
         Real Values:
       -->
       <dampingLinear>5.39 17.36 17.36</dampingLinear>
-      <dampingAngular>0.00114 0.007 0.007</dampingAngular>
+      <dampingAngular>0.0114 0.07 0.07</dampingAngular>
 
     </plugin>
 
