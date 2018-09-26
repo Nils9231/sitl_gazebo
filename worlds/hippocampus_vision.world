@@ -19,7 +19,7 @@
         NED World frame.
     -->
     <include>
-      <uri>model://hippocampus</uri>
+      <uri>model://hippocampus_vision</uri>
       <pose>0 0 0 0 3.1415 -1.57075</pose>
     </include>
 	
