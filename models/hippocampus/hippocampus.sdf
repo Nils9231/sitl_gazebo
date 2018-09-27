@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version='1.5'>
+<sdf version='1.6'>
   <!--
       Add a model named hippocampus, developed by the Technical University Hamburg-Harburg (TUHH),
       start with the first link, the base (hippocampus without rotors). The pose is relative to the given frame.
@@ -62,7 +62,7 @@
       </visual>
 
     <!-- RGB cylinders representing the resulting frame -->
-    <visual name="frameX">
+      <visual name="frameX">
       <pose>0.1 0 0 0 1.57 0</pose>
           <geometry>
             <cylinder>
@@ -76,8 +76,8 @@
             <specular>0.0 0.0 0.0 1</specular>
             <emissive>1.0 0.0 0.0 1</emissive>
           </material>
-    </visual>
-    <visual name="frameY">
+      </visual>
+      <visual name="frameY">
       <pose>0 0.1 0 -1.57 0 0</pose>
           <geometry>
             <cylinder>
@@ -91,8 +91,8 @@
             <specular>0.0 0.0 0.0 1</specular>
             <emissive>0.0 1.0 0.0 1</emissive>
           </material>
-    </visual>
-    <visual name="frameZ">
+      </visual>
+      <visual name="frameZ">
       <pose>0 0 0.1 0 0 0</pose>
           <geometry>
             <cylinder>
@@ -106,7 +106,7 @@
             <specular>0.0 0.0 0.0 1</specular>
             <emissive>0.0 0.0 1.0 1</emissive>
           </material>
-    </visual>
+      </visual>
 
 
       <!--
@@ -114,7 +114,7 @@
         A collision cylinder is created which encapsulates the Hippocampus. This allows faster computation as
         simulations using the real mesh of the Hippocampus since the geometry is easier to handle
       -->
-      <collision name='base_link_collision'>
+      <collision name='base_link_inertia_collision'>
         <laser_retro>0</laser_retro>
         <max_contacts>10</max_contacts>
         <pose>0 0 0 0 1.570796 0</pose>
@@ -173,7 +173,7 @@
         HippoCampus. PX4 uses the data from the IMU to calculate the orientation. Therefore PX4 assumes a NED (North-
         East-Down) coordinate frame whereas Gazebo uses a ENU (East-North-Up) coordinate frame.
     -->
-    <link name='hippocampus/imu_link'>
+    <link name='/imu_link'>
       <pose>0 0 0 3.1415 0 0</pose>
       <inertial>
         <pose>0 0 0 0 0 0</pose>
@@ -192,6 +192,39 @@
       <gravity>0</gravity>
     </link>
 
+    <joint name='/imu_joint' type='revolute'>
+      <child>/imu_link</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+          <effort>0</effort>
+          <velocity>0</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0</damping>
+          <friction>0</friction>
+        </dynamics>
+	<use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+          <suspension>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </suspension>
+        </ode>
+      </physics>
+    </joint>
+   
     <!--
         Now the rotors are defined on which the forces and moments attack. They are positioned relative to the center
         of the Hippocampus. Also a collision cylinder will be defined for each rotor to reduce computation time.
@@ -203,30 +236,6 @@
       <kinematic>0</kinematic>
       <velocity_decay/>
       <gravity>0</gravity>
-      <visual name='rotor_0_visual'>
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://hippocampus/meshes/hippocampus_prop.stl</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>__default__</uri>
-          </script>
-          <ambient>0 0 1 1</ambient>
-          <diffuse>0 0 1 1</diffuse>
-          <specular>0 0 1 1</specular>
-          <emissive>0 0 1 1</emissive>
-          <shader type='vertex'>
-            <normal_map>__default__</normal_map>
-          </shader>
-        </material>
-        <cast_shadows>1</cast_shadows>
-        <transparency>0</transparency>
-      </visual>
       <collision name='rotor_0_collision'>
         <laser_retro>0</laser_retro>
         <max_contacts>10</max_contacts>
@@ -274,15 +283,7 @@
           </contact>
         </surface>
       </collision>
-    </link>
-    <!-- CW 2 -->
-    <link name='rotor_1'>
-      <pose>-0.05 +0.0481 -0.0481 0 0 0</pose>
-      <self_collide>0</self_collide>
-      <kinematic>0</kinematic>
-      <velocity_decay/>
-      <gravity>0</gravity>
-      <visual name='rotor_1_visual'>
+      <visual name='rotor_0_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
@@ -293,7 +294,7 @@
         <material>
           <script>
             <name>Gazebo/DarkGrey</name>
-            <uri>__default__</uri>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
           </script>
           <ambient>0 0 1 1</ambient>
           <diffuse>0 0 1 1</diffuse>
@@ -306,6 +307,46 @@
         <cast_shadows>1</cast_shadows>
         <transparency>0</transparency>
       </visual>
+    </link>
+    <joint name='rotor_0_joint' type='revolute'>
+      <child>rotor_0</child>
+      <parent>base_link</parent>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>-1</effort>
+          <velocity>-1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0</damping>
+          <friction>0</friction>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+          <suspension>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </suspension>
+        </ode>
+      </physics>
+    </joint>
+    <!-- CW 2 -->
+    <link name='rotor_1'>
+      <pose>-0.05 +0.0481 -0.0481 0 0 0</pose>
+      <self_collide>0</self_collide>
+      <kinematic>0</kinematic>
+      <velocity_decay/>
+      <gravity>0</gravity>
       <collision name='rotor_1_collision'>
         <laser_retro>0</laser_retro>
         <max_contacts>10</max_contacts>
@@ -353,15 +394,7 @@
           </contact>
         </surface>
       </collision>
-    </link>
-    <!-- CCW 3 -->
-    <link name='rotor_2'>
-      <pose>-0.05 0.0481 0.0481 0 0 0</pose>
-      <self_collide>0</self_collide>
-      <kinematic>0</kinematic>
-      <velocity_decay/>
-      <gravity>0</gravity>
-      <visual name='rotor_2_visual'>
+      <visual name='rotor_1_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
@@ -372,7 +405,7 @@
         <material>
           <script>
             <name>Gazebo/DarkGrey</name>
-            <uri>__default__</uri>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
           </script>
           <ambient>0 0 1 1</ambient>
           <diffuse>0 0 1 1</diffuse>
@@ -385,6 +418,46 @@
         <cast_shadows>1</cast_shadows>
         <transparency>0</transparency>
       </visual>
+    </link>
+    <joint name='rotor_1_joint' type='revolute'>
+      <parent>base_link</parent>
+      <child>rotor_1</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <use_parent_model_frame>1</use_parent_model_frame>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>-1</effort>
+          <velocity>-1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0</damping>
+          <friction>0</friction>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+          <suspension>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </suspension>
+        </ode>
+      </physics>
+    </joint>
+    <!-- CCW 3 -->
+    <link name='rotor_2'>
+      <pose>-0.05 0.0481 0.0481 0 0 0</pose>
+      <self_collide>0</self_collide>
+      <kinematic>0</kinematic>
+      <velocity_decay/>
+      <gravity>0</gravity>
       <collision name='rotor_2_collision'>
         <laser_retro>0</laser_retro>
         <max_contacts>10</max_contacts>
@@ -432,15 +505,7 @@
           </contact>
         </surface>
       </collision>
-    </link>
-    <!-- CW 4 -->
-    <link name='rotor_3'>
-      <pose>-0.05 -0.0481 +0.0481 0 0 0</pose>
-      <self_collide>0</self_collide>
-      <kinematic>0</kinematic>
-      <velocity_decay/>
-      <gravity>0</gravity>
-      <visual name='rotor_3_visual'>
+      <visual name='rotor_2_visual'>
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
@@ -451,7 +516,7 @@
         <material>
           <script>
             <name>Gazebo/DarkGrey</name>
-            <uri>__default__</uri>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
           </script>
           <ambient>0 0 1 1</ambient>
           <diffuse>0 0 1 1</diffuse>
@@ -464,6 +529,46 @@
         <cast_shadows>1</cast_shadows>
         <transparency>0</transparency>
       </visual>
+    </link>
+    <joint name='rotor_2_joint' type='revolute'>
+      <parent>base_link</parent>
+      <child>rotor_2</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <use_parent_model_frame>1</use_parent_model_frame>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+          <effort>-1</effort>
+          <velocity>-1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+          <damping>0</damping>
+          <friction>0</friction>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <limit>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </limit>
+          <suspension>
+            <cfm>0</cfm>
+            <erp>0.2</erp>
+          </suspension>
+        </ode>
+      </physics>
+    </joint>
+    <!-- CW 4 -->
+    <link name='rotor_3'>
+      <pose>-0.05 -0.0481 +0.0481 0 0 0</pose>
+      <self_collide>0</self_collide>
+      <kinematic>0</kinematic>
+      <velocity_decay/>
+      <gravity>0</gravity>
       <collision name='rotor_3_collision'>
         <laser_retro>0</laser_retro>
         <max_contacts>10</max_contacts>
@@ -511,141 +616,31 @@
           </contact>
         </surface>
       </collision>
+      <visual name='rotor_3_visual'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://hippocampus/meshes/hippocampus_prop.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>__default__</uri>
+          </script>
+          <ambient>0 0 1 1</ambient>
+          <diffuse>0 0 1 1</diffuse>
+          <specular>0 0 1 1</specular>
+          <emissive>0 0 1 1</emissive>
+          <shader type='vertex'>
+            <normal_map>__default__</normal_map>
+          </shader>
+        </material>
+        <cast_shadows>1</cast_shadows>
+        <transparency>0</transparency>
+      </visual>
     </link>
-
-    <!--
-        Joints are defined which connects two links with kinematic and dynamic properties. Therefore all childs, thus
-        the IMU and the rotors, are joint with the base_link, the base Hippocampus model
-    -->
-    <joint name='hippocampus/imu_joint' type='revolute'>
-      <parent>base_link</parent>
-      <child>hippocampus/imu_link</child>
-      <axis>
-        <xyz>1 0 0</xyz>
-        <use_parent_model_frame>1</use_parent_model_frame>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-          <effort>0</effort>
-          <velocity>0</velocity>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-    <joint name='rotor_0_joint' type='revolute'>
-      <parent>base_link</parent>
-      <child>rotor_0</child>
-      <axis>
-        <xyz>1 0 0</xyz>
-        <use_parent_model_frame>1</use_parent_model_frame>
-        <limit>
-          <lower>-1e+16</lower>
-          <upper>1e+16</upper>
-          <effort>-1</effort>
-          <velocity>-1</velocity>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-    <joint name='rotor_1_joint' type='revolute'>
-      <parent>base_link</parent>
-      <child>rotor_1</child>
-      <axis>
-        <xyz>1 0 0</xyz>
-        <use_parent_model_frame>1</use_parent_model_frame>
-        <limit>
-          <lower>-1e+16</lower>
-          <upper>1e+16</upper>
-          <effort>-1</effort>
-          <velocity>-1</velocity>
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
-    <joint name='rotor_2_joint' type='revolute'>
-      <parent>base_link</parent>
-      <child>rotor_2</child>
-      <axis>
-        <xyz>1 0 0</xyz>
-        <use_parent_model_frame>1</use_parent_model_frame>
-        <limit>
-          <lower>-1e+16</lower>
-          <upper>1e+16</upper>
-          <effort>-1</effort>
-          <velocity>-1</velocity>
-
-        </limit>
-        <dynamics>
-          <spring_reference>0</spring_reference>
-          <spring_stiffness>0</spring_stiffness>
-          <damping>0</damping>
-          <friction>0</friction>
-        </dynamics>
-      </axis>
-      <physics>
-        <ode>
-          <limit>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </limit>
-          <suspension>
-            <cfm>0</cfm>
-            <erp>0.2</erp>
-          </suspension>
-        </ode>
-      </physics>
-    </joint>
     <joint name='rotor_3_joint' type='revolute'>
       <parent>base_link</parent>
       <child>rotor_3</child>
@@ -680,22 +675,142 @@
     </joint>
 
     <!--
+        Joints are defined which connects two links with kinematic and dynamic properties. Therefore all childs, thus
+        the IMU and the rotors, are joint with the base_link, the base Hippocampus model
+    -->
+    
+    <!--
         Now the plugins which are called by the simulation are defined. Also important parameters such as the transition
         from motor command to real force are defined.
     -->
+    <plugin name='rosbag' filename='libgazebo_multirotor_base_plugin.so'>
+      <robotNamespace/>
+      <linkName>base_link</linkName>
+      <rotorVelocitySlowdownSim>10</rotorVelocitySlowdownSim>
+    </plugin>
+    
+    
 
-    <static>0</static>
+    <!--
+        The gazebo_mavlink_plugin.cpp is called. Parameters are transferred.
+    -->
+
+    <!--
+        The gazebo_uvv_plugin is called. Parameters such as the namespace or addedMass are transferred.
+    -->
+
+    <plugin name='uuv_plugin' filename='libgazebo_uuv_plugin.so'>
+      <robotNamespace/>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <linkName>base_link</linkName>
+      <motorForceConstant>3</motorForceConstant>
+      <motorTorqueConstant>0.02</motorTorqueConstant>
+
+      <!-- Parameters for the simulation -->
+
+      <!--
+        Added Mass Matrix as two vectors in order to define the diagonal
+        Real Values: Xu = -1,11 kg; Yv = Zw = -2,8 kg; Kp = -0,00451 kgm²; Mq = Nr = -0,0163 kgm²
+      -->
+
+      <addedMassLinear>1.11 2.8 2.8</addedMassLinear>
+      <addedMassAngular>0.00451 0.0163 0.0163</addedMassAngular>
+
+      <!--
+        Damping Matrix as two vectors in order to define the diagonal
+        Real Values:
+      -->
+
+      <dampingLinear>5.39 17.36 17.36</dampingLinear>
+      <dampingAngular>0.00114 0.007 0.007</dampingAngular>
+
+    </plugin>
+
+    <!--
+        The gazebo_imu_plugin.cpp is called.
+    -->
+    
+
+    <!--
+        The gazebo_motor_model.cpp is called.
+        Forces and Moments are set to zero since they are already calculated using the gazebo_uuv_plugin.
+        The motor model plugins can be removed if you don't need the rotors to spin.
+    -->
+    <plugin name='front_right_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>rotor_0_joint</jointName>
+      <linkName>rotor_0</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.0125</timeConstantUp>
+      <timeConstantDown>0.025</timeConstantDown>
+      <maxRotVelocity>838</maxRotVelocity>
+      <motorConstant>0.0</motorConstant>
+      <momentConstant>0.0</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>0</motorNumber>
+      <rotorDragCoefficient>0.0</rotorDragCoefficient>
+      <rollingMomentCoefficient>0.0</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/0</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>0.05</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='back_left_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>rotor_1_joint</jointName>
+      <linkName>rotor_1</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.0125</timeConstantUp>
+      <timeConstantDown>0.025</timeConstantDown>
+      <maxRotVelocity>838</maxRotVelocity>
+      <motorConstant>0.0</motorConstant>
+      <momentConstant>0.0</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>1</motorNumber>
+      <rotorDragCoefficient>0.0</rotorDragCoefficient>
+      <rollingMomentCoefficient>0.0</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/1</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>0.05</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='front_left_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>rotor_2_joint</jointName>
+      <linkName>rotor_2</linkName>
+      <turningDirection>ccw</turningDirection>
+      <timeConstantUp>0.0125</timeConstantUp>
+      <timeConstantDown>0.025</timeConstantDown>
+      <maxRotVelocity>838</maxRotVelocity>
+      <motorConstant>0.0</motorConstant>
+      <momentConstant>0.0</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>2</motorNumber>
+      <rotorDragCoefficient>0.0</rotorDragCoefficient>
+      <rollingMomentCoefficient>0.0</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/2</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>0.05</rotorVelocitySlowdownSim>
+    </plugin>
+    <plugin name='back_right_motor_model' filename='libgazebo_motor_model.so'>
+      <robotNamespace/>
+      <jointName>rotor_3_joint</jointName>
+      <linkName>rotor_3</linkName>
+      <turningDirection>cw</turningDirection>
+      <timeConstantUp>0.0125</timeConstantUp>
+      <timeConstantDown>0.025</timeConstantDown>
+      <maxRotVelocity>838</maxRotVelocity>
+      <motorConstant>0.0</motorConstant>
+      <momentConstant>0.0</momentConstant>
+      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
+      <motorNumber>3</motorNumber>
+      <rotorDragCoefficient>0.0</rotorDragCoefficient>
+      <rollingMomentCoefficient>0.0</rollingMomentCoefficient>
+      <motorSpeedPubTopic>motor_speed/3</motorSpeedPubTopic>
+      <rotorVelocitySlowdownSim>0.05</rotorVelocitySlowdownSim>
+    </plugin>
     <allow_auto_disable>1</allow_auto_disable>
     <plugin name="gps_plugin" filename="libgazebo_gps_plugin.so">
         <robotNamespace></robotNamespace>
         <gpsNoise>true</gpsNoise>
     </plugin>
-
-    <!--
-        The gazebo_mavlink_plugin.cpp is called. Parameters are transferred.
-    -->
     <plugin name='mavlink_interface' filename='libgazebo_mavlink_interface.so'>
-      <robotNamespace>hippocampus</robotNamespace>
+      <robotNamespace/>
       <imuSubTopic>/imu</imuSubTopic>
       <gpsSubTopic>/gps</gpsSubTopic>
       <mavlink_addr>INADDR_ANY</mavlink_addr>
@@ -710,7 +825,6 @@
       <vehicle_is_tailsitter>false</vehicle_is_tailsitter>
       <send_odometry>false</send_odometry>
       <motorSpeedCommandPubTopic>/gazebo/command/motor_speed</motorSpeedCommandPubTopic>
-
       <!-- control channels, this way for every channel different settings can be realized -->
       <control_channels>
         <channel name='rotor1'>
@@ -746,46 +860,11 @@
           <joint_control_type>velocity</joint_control_type>
         </channel>
       </control_channels>
-
     </plugin>
-
-    <!--
-        The gazebo_uvv_plugin is called. Parameters such as the namespace or addedMass are transferred.
-    -->
-
-    <plugin name='uuv_plugin' filename='libgazebo_uuv_plugin.so'>
-      <robotNamespace>hippocampus</robotNamespace>
-      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
-      <linkName>base_link</linkName>
-      <motorForceConstant>3</motorForceConstant>
-      <motorTorqueConstant>0.02</motorTorqueConstant>
-
-      <!-- Parameters for the simulation -->
-
-      <!--
-        Added Mass Matrix as two vectors in order to define the diagonal
-        Real Values: Xu = -1,11 kg; Yv = Zw = -2,8 kg; Kp = -0,00451 kgm²; Mq = Nr = -0,0163 kgm²
-      -->
-
-      <addedMassLinear>1.11 2.8 2.8</addedMassLinear>
-      <addedMassAngular>0.00451 0.0163 0.0163</addedMassAngular>
-
-      <!--
-        Damping Matrix as two vectors in order to define the diagonal
-        Real Values:
-      -->
-
-      <dampingLinear>5.39 17.36 17.36</dampingLinear>
-      <dampingAngular>0.00114 0.007 0.007</dampingAngular>
-
-    </plugin>
-
-    <!--
-        The gazebo_imu_plugin.cpp is called.
-    -->
+    <static>0</static>
     <plugin name='gazebo_imu_plugin' filename='libgazebo_imu_plugin.so'>
-      <robotNamespace>hippocampus</robotNamespace>
-      <linkName>hippocampus/imu_link</linkName>
+      <robotNamespace/>
+      <linkName>/imu_link</linkName>
       <imuTopic>/imu</imuTopic>
       <gyroscopeNoiseDensity>0.0003394</gyroscopeNoiseDensity>
       <gyroscopeRandomWalk>3.8785e-05</gyroscopeRandomWalk>
@@ -795,80 +874,6 @@
       <accelerometerRandomWalk>0.006</accelerometerRandomWalk>
       <accelerometerBiasCorrelationTime>300.0</accelerometerBiasCorrelationTime>
       <accelerometerTurnOnBiasSigma>0.196</accelerometerTurnOnBiasSigma>
-    </plugin>
-
-    <!--
-        The gazebo_motor_model.cpp is called.
-        Forces and Moments are set to zero since they are already calculated using the gazebo_uuv_plugin.
-        The motor model plugins can be removed if you don't need the rotors to spin.
-    -->
-    <plugin name='front_right_motor_model' filename='libgazebo_motor_model.so'>
-      <robotNamespace>hippocampus</robotNamespace>
-      <jointName>rotor_0_joint</jointName>
-      <linkName>rotor_0</linkName>
-      <turningDirection>ccw</turningDirection>
-      <timeConstantUp>0.0125</timeConstantUp>
-      <timeConstantDown>0.025</timeConstantDown>
-      <maxRotVelocity>838</maxRotVelocity>
-      <motorConstant>0.0</motorConstant>
-      <momentConstant>0.0</momentConstant>
-      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
-      <motorNumber>0</motorNumber>
-      <rotorDragCoefficient>0.0</rotorDragCoefficient>
-      <rollingMomentCoefficient>0.0</rollingMomentCoefficient>
-      <motorSpeedPubTopic>motor_speed/0</motorSpeedPubTopic>
-      <rotorVelocitySlowdownSim>0.05</rotorVelocitySlowdownSim>
-    </plugin>
-    <plugin name='back_left_motor_model' filename='libgazebo_motor_model.so'>
-      <robotNamespace>hippocampus</robotNamespace>
-      <jointName>rotor_1_joint</jointName>
-      <linkName>rotor_1</linkName>
-      <turningDirection>cw</turningDirection>
-      <timeConstantUp>0.0125</timeConstantUp>
-      <timeConstantDown>0.025</timeConstantDown>
-      <maxRotVelocity>838</maxRotVelocity>
-      <motorConstant>0.0</motorConstant>
-      <momentConstant>0.0</momentConstant>
-      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
-      <motorNumber>1</motorNumber>
-      <rotorDragCoefficient>0.0</rotorDragCoefficient>
-      <rollingMomentCoefficient>0.0</rollingMomentCoefficient>
-      <motorSpeedPubTopic>motor_speed/1</motorSpeedPubTopic>
-      <rotorVelocitySlowdownSim>0.05</rotorVelocitySlowdownSim>
-    </plugin>
-    <plugin name='front_left_motor_model' filename='libgazebo_motor_model.so'>
-      <robotNamespace>hippocampus</robotNamespace>
-      <jointName>rotor_2_joint</jointName>
-      <linkName>rotor_2</linkName>
-      <turningDirection>ccw</turningDirection>
-      <timeConstantUp>0.0125</timeConstantUp>
-      <timeConstantDown>0.025</timeConstantDown>
-      <maxRotVelocity>838</maxRotVelocity>
-      <motorConstant>0.0</motorConstant>
-      <momentConstant>0.0</momentConstant>
-      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
-      <motorNumber>2</motorNumber>
-      <rotorDragCoefficient>0.0</rotorDragCoefficient>
-      <rollingMomentCoefficient>0.0</rollingMomentCoefficient>
-      <motorSpeedPubTopic>motor_speed/2</motorSpeedPubTopic>
-      <rotorVelocitySlowdownSim>0.05</rotorVelocitySlowdownSim>
-    </plugin>
-    <plugin name='back_right_motor_model' filename='libgazebo_motor_model.so'>
-      <robotNamespace>hippocampus</robotNamespace>
-      <jointName>rotor_3_joint</jointName>
-      <linkName>rotor_3</linkName>
-      <turningDirection>cw</turningDirection>
-      <timeConstantUp>0.0125</timeConstantUp>
-      <timeConstantDown>0.025</timeConstantDown>
-      <maxRotVelocity>838</maxRotVelocity>
-      <motorConstant>0.0</motorConstant>
-      <momentConstant>0.0</momentConstant>
-      <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
-      <motorNumber>3</motorNumber>
-      <rotorDragCoefficient>0.0</rotorDragCoefficient>
-      <rollingMomentCoefficient>0.0</rollingMomentCoefficient>
-      <motorSpeedPubTopic>motor_speed/3</motorSpeedPubTopic>
-      <rotorVelocitySlowdownSim>0.05</rotorVelocitySlowdownSim>
     </plugin>
   </model>
 </sdf>
