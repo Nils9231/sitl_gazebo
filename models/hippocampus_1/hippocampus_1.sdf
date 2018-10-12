@@ -722,7 +722,7 @@
       -->
 
       <dampingLinear>5.390 17.360 17.360</dampingLinear>
-      <dampingAngular>1.14 3.5 3.5</dampingAngular>
+      <dampingAngular>0.00114 0.007 0.007</dampingAngular>
 
     </plugin>
 
