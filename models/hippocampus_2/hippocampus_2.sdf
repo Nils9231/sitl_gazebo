@@ -16,14 +16,14 @@
           Real values:  m = 1,47 kg; Ixx = 0,002408 kgm²; Iyy = Izz = 0.010717 kgm²
                         Xu = -1,11 kg; Yv = Zw = -2,8 kg; Kp = -0,00451 kgm²; Mq = Nr = -0,0163 kgm²
         -->
-        <mass>3</mass>
+        <mass>1.47</mass>
         <inertia>
-          <ixx>0.007</ixx>
+          <ixx>0.002408</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.027</iyy>
+          <iyy>100.010717</iyy>
           <iyz>0</iyz>
-          <izz>0.027</izz>
+          <izz>0.010717</izz>
         </inertia>
       </inertial>
       <!--
@@ -704,8 +704,8 @@
       <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
       <linkName>base_link</linkName>
 <!--  <motorForceConstant>3</motorForceConstant> -->
-      <motorForceConstant>30</motorForceConstant>
-      <motorTorqueConstant>0.02</motorTorqueConstant>
+      <motorForceConstant>1.75</motorForceConstant>
+      <motorTorqueConstant>0.002</motorTorqueConstant>
 
       <!-- Parameters for the simulation -->
 
@@ -715,7 +715,7 @@
       -->
 
       <addedMassLinear>1.11 2.8 2.8</addedMassLinear>
-      <addedMassAngular>0.00451 0.0163 0.0163</addedMassAngular>
+      <addedMassAngular>0.00451 100.0163 0.0163</addedMassAngular>
 
       <!--
         Damping Matrix as two vectors in order to define the diagonal
@@ -725,8 +725,8 @@
       <dampingLinear>5.390 17.360 17.360</dampingLinear>
       <dampingAngular>0.00114 0.007 0.007</dampingAngular>
       -->
-      <dampingLinear>539.0 1736.0 1736.0</dampingLinear>
-      <dampingAngular>0.114 0.7 0.7</dampingAngular>
+      <dampingLinear>5.39 17.360 17.360</dampingLinear>
+      <dampingAngular>0.00114 100.007 0.007</dampingAngular>      
 
     </plugin>
 

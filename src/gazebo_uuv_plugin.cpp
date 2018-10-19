@@ -25,6 +25,7 @@
 #include "gazebo_uuv_plugin.h"
 #include <ignition/math.hh>
 
+
 namespace gazebo {
 
 GazeboUUVPlugin::~GazeboUUVPlugin() {
@@ -46,7 +47,6 @@ void GazeboUUVPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf) {
   link_ = _model->GetLink(link_name_);
   // get the child links, these are the links which represents the rotors of the hippocampus
   rotor_links_ = link_->GetChildJointsLinks();
-  std::cout << "Hello Nils \n";
   for(int i = 0; i < rotor_links_.size(); i++) {
     std::cout << "Rotor Link:" << rotor_links_[i]->GetScopedName() << "\n";
     command_[i] = 0.0;
@@ -113,7 +113,7 @@ void GazeboUUVPlugin::CommandCallback(CommandMotorSpeedPtr &command) {
     << command_[1] << ","
     << command_[2] << ","
     << command_[3] << ","
-    << "\n"; */
+    << "\n";*/
 
 }
 
@@ -142,7 +142,7 @@ void GazeboUUVPlugin::OnUpdate(const common::UpdateInfo& _info) {
     rotor_links_[i+1]->AddRelativeForce(rotor_force);
 
     forces[i] = rotor_force[0];
-    //std::cout << "Applying force " << rotor_force[2] << " to rotor " << i << "\n";
+    //std::cout << "Applying force " << rotor_force[0] << " to rotor " << i << "\n";
 
     /*
     // CCW 1, CW 2, CCW 3 and CW 4. Apply drag torque
