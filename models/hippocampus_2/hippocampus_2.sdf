@@ -704,7 +704,7 @@
       <commandSubTopic>/gazebo/command/motor_speed</commandSubTopic>
       <linkName>base_link</linkName>
 <!--  <motorForceConstant>3</motorForceConstant> -->
-      <motorForceConstant>1.75</motorForceConstant>
+      <motorForceConstant>5</motorForceConstant>
       <motorTorqueConstant>0.002</motorTorqueConstant>
 
       <!-- Parameters for the simulation -->
